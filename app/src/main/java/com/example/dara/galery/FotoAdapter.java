@@ -32,7 +32,7 @@ public class FotoAdapter extends RecyclerView.Adapter<FotoAdapter.FotoHolder>{
     @Override
     public void onBindViewHolder(@NonNull FotoHolder holder, int position) {
         Foto foto = dataFoto.get(position);
-        holder.judul.setText(String.valueOf(foto.judul));
+        holder.judul.setText(String.valueOf(foto.nama));
 //        Glide.with()
 //                .load(foto.foto)
 //                .override(350, 550)

@@ -1,0 +1,19 @@
+<resources>
+    <string name="app_name">galery</string>
+    <string name="title_galery">Galery</string>
+    <string name="title_add">Tambah</string>
+    <string name="title_home">Home</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="judul">Judul</string>
+
+    <!--Error message-->
+    <string name="msg_cannot_allow_empty_field">msg_cannot_allow_empty_field</string>
+
+
+
+        <string name="permission_dialog">Accessing Location Permissions required</string>
+        <string name="go_to_permissions_settings">Go to App settings and enable permissions</string>
+
+</resources>
