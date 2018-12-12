@@ -52,12 +52,32 @@
         android:hint="deskripsi" />
 
     <EditText
-        android:id="@+id/edit_text_lokasi"
+        android:id="@+id/edit_text_lat"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="lokasi"/>
+        android:hint="lat"/>
 
+    <EditText
+        android:id="@+id/edit_text_lng"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="long"/>
 
+    <Button
+        android:id="@+id/button_location"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="50dp"
+        android:text="Dapatkan Lokasi" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Enter Address"
+        android:id="@+id/text_location"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentLeft="true" />
 
     <Button
         android:id="@+id/tambah_foto"

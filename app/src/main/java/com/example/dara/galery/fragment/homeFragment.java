@@ -18,4 +18,6 @@ public class homeFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_home, container, false);
         return view;
     }
+
+
 }

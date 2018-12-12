@@ -6,16 +6,19 @@ public class Foto {
     String nama;
     String path_foto;
     String deskripsi;
-    String lokasi;
+    Double lat;
+    Double lng;
 
+    public Foto(int i, String string, String cursorString, String s, double aDouble) {
+    }
 
-
-    public Foto(int id, String nama, String path_foto, String deskripsi, String lokasi) {
+    public Foto(int id, String nama, String path_foto, String deskripsi, Double lat, Double lng) {
         this.id = id;
         this.nama = nama;
         this.path_foto = path_foto;
         this.deskripsi = deskripsi;
-        this.lokasi = lokasi;
+        this.lat = lat;
+        this.lng = lng;
     }
 
     public Foto() {
@@ -54,12 +57,20 @@ public class Foto {
         this.deskripsi = deskripsi;
     }
 
-    public String getLokasi() {
-        return lokasi;
+    public Double getLat() {
+        return lat;
     }
 
-    public void setLokasi(String lokasi) {
-        this.lokasi = lokasi;
+    public void setLat(Double lat) {
+        this.lat = lat;
+    }
+
+    public Double getLng() {
+        return lng;
+    }
+
+    public void setLng(Double lng) {
+        this.lng = lng;
     }
 
     @Override
@@ -69,7 +80,8 @@ public class Foto {
                 ", nama='" + nama + '\'' +
                 ", path_foto='" + path_foto + '\'' +
                 ", deskripsi='" + deskripsi + '\'' +
-                ", lokasi='" + lokasi + '\'' +
+                ", lat='" + lat + '\'' +
+                ", lng='" + lng + '\'' +
                 '}';
     }
 }

@@ -1,19 +1,25 @@
 package com.example.dara.galery.fragment;
 
 
+import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.location.Location;
+import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.text.TextUtils;
 import android.util.Log;
@@ -23,10 +29,11 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.dara.galery.DatabaseHandler;
 import com.example.dara.galery.Foto;
-import com.example.dara.galery.MainActivity;
 import com.example.dara.galery.R;
 
 import java.io.ByteArrayInputStream;
@@ -35,7 +42,6 @@ import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.List;
 import java.util.Locale;
 
 public class addFragment extends Fragment {
@@ -51,8 +57,14 @@ public class addFragment extends Fragment {
     int bitmap_size = 40; // image quality 1 - 100;
     int max_resolution_image = 800;
 
+    //untuk location
+    private static  final  int REQUEST_LOCATION =1;
     private EditText ETnama, ETpath, ETdeskripsi, ETlokasi;
-    private Button tambahBtn;
+    TextView TextView;
+    private Button tambahBtn, button_location;
+    LocationManager locationManager;
+    String latitude, longtitude;
+
     DatabaseHandler handler;
 
     @Override
@@ -75,6 +87,9 @@ public class addFragment extends Fragment {
                 selectImage();
             }
         });
+
+
+
 
         return view;
     }
@@ -190,11 +205,35 @@ public class addFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_LOCATION);
+
+
         ETnama = view.findViewById(R.id.edit_text_name);
         ETpath = view.findViewById(R.id.edit_text_path);
         ETdeskripsi = view.findViewById(R.id.edit_text_deskripsi);
-        ETlokasi = view.findViewById(R.id.edit_text_lokasi);
+        ETlokasi = view.findViewById(R.id.edit_text_lat);
         tambahBtn = view.findViewById(R.id.tambah_foto);
+        button_location = view.findViewById(R.id.button_location);
+        TextView = view.findViewById(R.id.text_location);
+
+        //klik button_location
+        button_location.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v) {
+                locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
+                if(!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)){
+                    buildAlertMessageNoGPS();
+                }
+                else
+                    {
+                        getLocation();
+                    }
+
+            }
+        });
+
+
+
 
         //insert
 
@@ -220,29 +259,74 @@ public class addFragment extends Fragment {
 
     }
 
+
     @Override
     public void onPause() {
         super.onPause();
         ETnama.clearFocus();
     }
 
+   public void getLocation(){
+        if((ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED )
+                &&
+                (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION)
+                        != PackageManager.PERMISSION_GRANTED)){
+            ActivityCompat.requestPermissions(getActivity(), new String [] {Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_LOCATION);
+       }
+       else{
+            Location location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+            if(location!=null){
+                double lat = location.getLatitude();
+                double lng = location.getLongitude();
+                latitude = String.valueOf(lat);
+                longtitude = String.valueOf(lng);
+                ETlokasi.setText("Latitude" + latitude +", longitute"+ longtitude);
+
+                TextView.setText("Latitude" + latitude + "\n" +"longitute"+ longtitude);
+            }
+            else{
+                Toast.makeText(getActivity(),"TIDAK TAMPIL LOKASINYA YA", Toast.LENGTH_SHORT).show();
+            }
+        }
+   }
+
+   protected void buildAlertMessageNoGPS(){
+        final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        builder.setMessage("Hidupkan GPS mu")
+                .setCancelable(false)
+                .setPositiveButton("YA", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        startActivity(new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS));
+                    }
+                })
+                .setNegativeButton("Tidak", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.cancel();
+                    }
+                });
+   }
+
     private void tambah(final DatabaseHandler databaseHandler){
         String nama = ETnama.getText().toString();
         String deskripsi = ETdeskripsi.getText().toString();
         String path = ETpath.getText().toString();
-        String lokasi = ETlokasi.getText().toString();
+        Double lat = Double.valueOf(latitude);
+        Double lng = Double.valueOf(longtitude);
 
 
         Foto dataFoto = new Foto();
         dataFoto.setNama(nama);
         dataFoto.setDeskripsi(deskripsi);
         dataFoto.setPath_foto(path);
-        dataFoto.setLokasi(lokasi);
+        dataFoto.setLat(lat);
+        dataFoto.setLng(lng);
 
         databaseHandler.tambah_foto(dataFoto);
 
         ETnama.setText("");
-        ETlokasi.setText("");
         ETpath.setText("");
         ETdeskripsi.setText("");
     }
