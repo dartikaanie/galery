@@ -1,6 +1,7 @@
 package com.example.dara.galery.fragment;
 
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -51,12 +52,14 @@ public class galeryFragment extends Fragment {
     DatabaseHandler handler;
     Foto dataFoto;
     ArrayList<Foto> fotoList;
+    Activity activity;
     public static final  String urlData = "https://parit.store/galery/";
 
 
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
+        this.activity = (Activity) context;
          handler = new DatabaseHandler(context);
          dataFoto = new Foto();
     }
@@ -80,28 +83,10 @@ public class galeryFragment extends Fragment {
         rvListFoto.setLayoutManager(layoutManager);
         rvListFoto.setHasFixedSize(true);
 
-
-        fotoList = new ArrayList<>();
         if(((MainActivity)getActivity()).konekkah()){
-//            TmdbClient service = RetrofitClientInstance.getRetrofitInstance().create(TmdbClient.class);
-//            Call<FotoList> call = service.getAllGaleries();
-//            Log.e("call", String.valueOf(call));
-//            call.enqueue(new Callback<FotoList>() {
-//                @Override
-//                public void onResponse(Call<FotoList> call, Response<FotoList> response) {
-//                    List<Foto> listFotoItem = response.body().results;
-//                    fotoAdapter.setDataFoto(new ArrayList<Foto>(listFotoItem));
-//                }
-//
-//                @Override
-//                public void onFailure(Call<FotoList> call, Throwable t) {
-//                    Toast.makeText(getContext(), "Something went wrong...Please try later!", Toast.LENGTH_SHORT).show();
-//
-//                }
-//            });
-            getFoto();
+             getFoto();
         }else{
-            fotoAdapter.setDataFoto(getDataFoto(handler,dataFoto));
+//            fotoAdapter.setDataFoto(getDataFoto(handler,dataFoto));
         }
         return view;
     }
@@ -196,43 +181,33 @@ public class galeryFragment extends Fragment {
 
     private void getFoto()  {
 
-        if(((MainActivity)getActivity()).konekkah()){
+        TmdbClient client = (new Retrofit.Builder()
+                .baseUrl("http://parit.store")
+                .addConverterFactory(GsonConverterFactory.create())
+                .build())
+                .create(TmdbClient.class);
+        Call<List<Foto>> call = client.getAllGaleries();
+        call.enqueue(new Callback<List<Foto>>() {
+            @Override
+            public void onResponse(Call<List<Foto>> call,  Response<List<Foto>> response) {
+                Toast.makeText(activity, "Berhasil", Toast.LENGTH_SHORT).show();
 
-            String API_BASE_URL = "https://galeryonline.herokuapp.com";
-
-            Retrofit retrofit = new Retrofit.Builder()
-                    .baseUrl(API_BASE_URL)
-                    .addConverterFactory(GsonConverterFactory.create())
-                    .build();
-            TmdbClient client = retrofit.create(TmdbClient.class);
-
-            Call<FotoList> call = client.getAllGaleries();
-            call.enqueue(new Callback<FotoList>() {
-                @Override
-                public void onResponse(Call<FotoList> call, Response<FotoList> response) {
-                    Toast.makeText(getActivity(), "Berhasil", Toast.LENGTH_SHORT).show();
-                    FotoList fotoList =response.body();
-                    List<Foto> listFotoItem = fotoList.results;
-                    if(listFotoItem == null){
-                        Toast.makeText(getContext(), "Maaf, Tidak ada data", Toast.LENGTH_SHORT).show();
-                    }
-                    else{
-                        saveToDb(listFotoItem);
-                        Log.d("listFoto", String.valueOf(listFotoItem));
-                        fotoAdapter.setDataFoto(new ArrayList<Foto>(listFotoItem));
-                    }
+                List<Foto> listFotoItem = response.body();
+               if(listFotoItem == null){
+                    Toast.makeText(activity, "Maaf, Tidak ada data", Toast.LENGTH_SHORT).show();
                 }
-
-                @Override
-                public void onFailure(Call<FotoList> call, Throwable t) {
-                    Toast.makeText(getContext(), "Gagal", Toast.LENGTH_SHORT).show();
+                else{
+                    saveToDb(listFotoItem);
+                    fotoAdapter.setDataFoto(new ArrayList<Foto>(listFotoItem));
                 }
-
-                });
-        }else{
-                  fotoAdapter.setDataFoto(new ArrayList<Foto>(handler.getAllDatas()));
             }
-        }
+
+            @Override
+            public void onFailure(Call<List<Foto>> call, Throwable t) {
+                Toast.makeText(activity, "Gagal Mengambil Data", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
 
     public void saveToDb(List<Foto> fotoList){
         for (Foto  m : fotoList){

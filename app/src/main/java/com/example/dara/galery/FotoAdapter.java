@@ -43,10 +43,7 @@ public class FotoAdapter extends RecyclerView.Adapter<FotoAdapter.FotoHolder>{
         Foto foto = dataFoto.get(position);
         holder.judul.setText(String.valueOf(foto.nama));
         holder.viewLokasi.setText(String.valueOf(foto.lat+" "+ foto.lng));
-
-        Log.e("foto", foto.getNama());
-
-        String url = "https://galeryonline.herokuapp.com/foto/" + foto.getPath_foto();
+        String url = "http://parit.store/galery/public/foto/" + foto.getPath_foto();
 
         Glide.with(holder.itemView)
                 .load(url)

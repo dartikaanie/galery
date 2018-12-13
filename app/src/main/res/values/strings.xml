@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">galery</string>
+    <string name="app_name">Pesona Indonesia</string>
     <string name="title_galery">Galery</string>
     <string name="title_add">Tambah</string>
     <string name="title_home">Home</string>
@@ -12,8 +12,7 @@
     <string name="msg_cannot_allow_empty_field">msg_cannot_allow_empty_field</string>
 
 
-
-        <string name="permission_dialog">Accessing Location Permissions required</string>
-        <string name="go_to_permissions_settings">Go to App settings and enable permissions</string>
+    <string name="permission_dialog">Accessing Location Permissions required</string>
+    <string name="go_to_permissions_settings">Go to App settings and enable permissions</string>
 
 </resources>
