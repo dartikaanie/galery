@@ -2,15 +2,19 @@ package com.example.dara.galery;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
+import android.support.design.widget.FloatingActionButton;
+import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -22,20 +26,20 @@ import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity implements BottomNavigationView.OnNavigationItemSelectedListener {
 
-    protected static TextView latLongTV;
+    private FloatingActionButton fab;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    protected void onCreate(Bundle outState) {
+        super.onCreate(outState);
         setContentView(R.layout.activity_main);
 
 
 
-            // kita set default nya Home Fragment
+//            // kita set default nya Home Fragment
         loadFragment(new galeryFragment());
-        // inisialisasi BottomNavigaionView
+//        // inisialisasi BottomNavigaionView
         BottomNavigationView bottomNavigationView = findViewById(R.id.navigation);
-        // beri listener pada saat item/menu bottomnavigation terpilih
+//        // beri listener pada saat item/menu bottomnavigation terpilih
         bottomNavigationView.setOnNavigationItemSelectedListener(this);
 
 
@@ -67,7 +71,11 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
+        Fragment fragment = new addFragment();
+//        outState("simpan_state", fragment);
     }
+
+
 
     // method untuk load fragment yang sesuai
     private boolean loadFragment(android.support.v4.app.Fragment fragment){
@@ -90,9 +98,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
             case R.id.navigation_add:
                 fragment = new addFragment();
                 break;
-            case R.id.navigation_home:
-                fragment = new homeFragment();
-                break;
+
         }
         return loadFragment(fragment);
     }

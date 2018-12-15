@@ -62,7 +62,7 @@ public class FotoAdapter extends RecyclerView.Adapter<FotoAdapter.FotoHolder>{
             List<Address> addresses = geocoder.getFromLocation(foto.getLat(), foto.getLng(), 1);
             if (addresses.size() > 0) {
                 android.location.Address address = addresses.get(0);
-                    result.append(address.getLocality());
+                    result.append(address.getAdminArea());
             }
         } catch (IOException e) {
             Log.e("tag", e.getMessage());

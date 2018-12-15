@@ -214,7 +214,7 @@ public class addFragment extends Fragment {
         ETlokasi = view.findViewById(R.id.edit_text_lat);
         tambahBtn = view.findViewById(R.id.tambah_foto);
         button_location = view.findViewById(R.id.button_location);
-        TextView = view.findViewById(R.id.text_location);
+//        TextView = view.findViewById(R.id.text_location);
 
         //klik button_location
         button_location.setOnClickListener(new View.OnClickListener(){
@@ -282,8 +282,6 @@ public class addFragment extends Fragment {
                 latitude = String.valueOf(lat);
                 longtitude = String.valueOf(lng);
                 ETlokasi.setText("Latitude" + latitude +", longitute"+ longtitude);
-
-                TextView.setText("Latitude" + latitude + "\n" +"longitute"+ longtitude);
             }
             else{
                 Toast.makeText(getActivity(),"TIDAK TAMPIL LOKASINYA YA", Toast.LENGTH_SHORT).show();

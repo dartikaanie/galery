@@ -11,79 +11,117 @@
     <!-- TODO: Update blank fragment layout -->
 
 
-    <TextView
-        android:id="@+id/textView"
+    <ScrollView
         android:layout_width="match_parent"
-        android:gravity="center"
-        android:text="Tambah Foto"
-        android:textColor="@android:color/black"
-        android:textStyle="bold"
-        android:layout_height="wrap_content" />
+        android:layout_height="match_parent">
 
-    <ImageView
-        android:id="@+id/imageView"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:src="@drawable/photo" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:orientation="vertical">
 
-    <Button
-        android:id="@+id/btn_choose_image"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:drawableLeft="@android:drawable/ic_menu_camera"
-        android:text="Choose Image" />
+            <TextView
+                android:id="@+id/textView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:lineSpacingExtra="10sp"
+                android:padding="10dp"
+                android:text="TAMBAH FOTO"
+                android:textColor="@android:color/black"
+                android:textSize="18sp"
+                android:textStyle="bold" />
 
-    <EditText
-        android:id="@+id/edit_text_name"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="name" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:orientation="horizontal">
 
-    <EditText
-        android:id="@+id/edit_text_path"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="path"/>
+                <ImageView
+                    android:id="@+id/imageView"
+                    android:layout_width="match_parent"
+                    android:layout_height="100dp"
+                    android:layout_weight="1"
+                    android:src="@drawable/photo" />
 
-    <EditText
-        android:id="@+id/edit_text_deskripsi"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="deskripsi" />
+                <Button
+                    android:id="@+id/btn_choose_image"
+                    style="@style/ButtonGeneral"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="25dp"
+                    android:layout_weight="1"
+                    android:drawableLeft="@android:drawable/ic_menu_camera"
+                    android:text="Pilih Foto" />
+            </LinearLayout>
 
-    <EditText
-        android:id="@+id/edit_text_lat"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="lat"/>
+            <TextView
+                android:id="@+id/text_nama"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Nama"
+                android:textColor="@color/colorPrimaryDark"
+                android:textStyle="bold" />
 
-    <EditText
-        android:id="@+id/edit_text_lng"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="long"/>
+            <EditText
+                android:id="@+id/edit_text_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
 
-    <Button
-        android:id="@+id/button_location"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="50dp"
-        android:text="Dapatkan Lokasi" />
+            <TextView
+                android:id="@+id/text_deskripsi"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Deskripsi"
+                android:textColor="@color/colorPrimaryDark"
+                android:textStyle="bold" />
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Enter Address"
-        android:id="@+id/text_location"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentLeft="true" />
+            <EditText
+                android:id="@+id/edit_text_deskripsi"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
 
-    <Button
-        android:id="@+id/tambah_foto"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Tambah" />
+            <EditText
+                android:id="@+id/edit_text_path"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="path" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal">
+
+                <EditText
+                    android:id="@+id/edit_text_lat"
+                    android:layout_width="wrap_content"
+                    android:layout_height="60dp"
+                    android:layout_weight="1"
+                    android:hint="Lokasi" />
+
+                <Button
+                    android:id="@+id/button_location"
+                    style="@style/ButtonGeneral"
+                    android:layout_width="28dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:drawableLeft="@drawable/location"
+                    android:text="Dapatkan Lokasi" />
+
+            </LinearLayout>
+
+            <Button
+                android:id="@+id/tambah_foto"
+                style="@style/ButtonGeneral"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Tambah" />
+
+        </LinearLayout>
+    </ScrollView>
 
 
 </LinearLayout>
