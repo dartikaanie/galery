@@ -1,7 +1,12 @@
 package com.example.dara.galery;
 
+import android.annotation.SuppressLint;
 import android.app.Fragment;
 import android.content.Context;
+import android.location.Address;
+import android.location.Geocoder;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -15,11 +20,16 @@ import com.bumptech.glide.Glide;
 
 import org.w3c.dom.Text;
 
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+
 
 public class FotoAdapter extends RecyclerView.Adapter<FotoAdapter.FotoHolder>{
     private ArrayList<Foto> dataFoto;
     OnItemClicked clickHandler;
+    Context context;
 
 
     public void setDataFoto(ArrayList<Foto> data){
@@ -35,6 +45,7 @@ public class FotoAdapter extends RecyclerView.Adapter<FotoAdapter.FotoHolder>{
                 .from(parent.getContext())
                 .inflate(R.layout.list_galery, parent, false);
         FotoHolder holder = new FotoHolder(v);
+        context = parent.getContext();
         return holder;
     }
 
@@ -42,7 +53,22 @@ public class FotoAdapter extends RecyclerView.Adapter<FotoAdapter.FotoHolder>{
     public void onBindViewHolder(@NonNull FotoHolder holder, int position) {
         Foto foto = dataFoto.get(position);
         holder.judul.setText(String.valueOf(foto.nama));
-        holder.viewLokasi.setText(String.valueOf(foto.lat+" "+ foto.lng));
+//        holder.viewLokasi.setText(String.valueOf(foto.lat+" "+ foto.lng));
+        StringBuilder result = new StringBuilder();
+//        StringBuilder alamatR = new StringBuilder();
+        Log.e("tes lat", String.valueOf(foto.getLat()));
+        try {
+            Geocoder geocoder = new Geocoder(context, Locale.getDefault());
+            List<Address> addresses = geocoder.getFromLocation(foto.getLat(), foto.getLng(), 1);
+            if (addresses.size() > 0) {
+                android.location.Address address = addresses.get(0);
+                    result.append(address.getLocality());
+            }
+        } catch (IOException e) {
+            Log.e("tag", e.getMessage());
+        }
+        holder.viewLokasi.setText(result.toString());
+
         String url = "http://parit.store/galery/public/foto/" + foto.getPath_foto();
 
         Glide.with(holder.itemView)
@@ -90,8 +116,12 @@ public class FotoAdapter extends RecyclerView.Adapter<FotoAdapter.FotoHolder>{
     }
 
 
+
     public void setClickHandler(OnItemClicked clickHandler) {
+
         this.clickHandler = clickHandler;
     }
+
+
 
 }

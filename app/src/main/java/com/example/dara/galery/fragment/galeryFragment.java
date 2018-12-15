@@ -3,31 +3,28 @@ package com.example.dara.galery.fragment;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.SharedPreferences;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.StringRequest;
-import com.android.volley.toolbox.Volley;
 import com.example.dara.galery.DatabaseHandler;
+import com.example.dara.galery.DetailActivity;
 import com.example.dara.galery.Foto;
 import com.example.dara.galery.FotoAdapter;
 import com.example.dara.galery.MainActivity;
-import com.example.dara.galery.Model.FotoList;
 import com.example.dara.galery.R;
-import com.example.dara.galery.RetrofitClientInstance;
 import com.example.dara.galery.TmdbClient;
 
 import org.json.JSONArray;
@@ -44,15 +41,15 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 
-public class galeryFragment extends Fragment {
+public class galeryFragment extends Fragment implements FotoAdapter.OnItemClicked {
 
     RecyclerView rvListFoto;
-    FotoAdapter fotoAdapter;
+    static FotoAdapter fotoAdapter;
 
-    DatabaseHandler handler;
-    Foto dataFoto;
+    static DatabaseHandler handler;
+    static Foto dataFoto;
     ArrayList<Foto> fotoList;
-    Activity activity;
+    static Activity activity;
     public static final  String urlData = "https://parit.store/galery/";
 
 
@@ -73,13 +70,27 @@ public class galeryFragment extends Fragment {
 
         fotoAdapter = new FotoAdapter();
         fotoAdapter.setDataFoto(getDataFoto(handler,dataFoto));
+        fotoAdapter.setClickHandler(this);
 
         rvListFoto = view.findViewById(R.id.list_galery);
         rvListFoto.setAdapter(fotoAdapter);
+        RecyclerView.LayoutManager layoutManager;
+
+        if(getResources().getDisplayMetrics().widthPixels>getResources().getDisplayMetrics().
+                heightPixels)
+        {
+            Toast.makeText(activity,"Screen switched to Landscape mode",Toast.LENGTH_SHORT).show();
+            layoutManager = new GridLayoutManager(getContext(),2);
+        }
+        else
+        {
+            Toast.makeText(activity,"Screen switched to Portrait mode",Toast.LENGTH_SHORT).show();
+            layoutManager = new LinearLayoutManager(getContext());
+        }
 
 
         //Menggunakan Layout Manager, Dan Membuat List Secara Vertical
-        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getContext());
+//        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getContext());
         rvListFoto.setLayoutManager(layoutManager);
         rvListFoto.setHasFixedSize(true);
 
@@ -90,6 +101,7 @@ public class galeryFragment extends Fragment {
         }
         return view;
     }
+
 
     public ArrayList<Foto> getDataFoto(DatabaseHandler handler, Foto fotos){
         ArrayList<Foto> tempData = new ArrayList<>();
@@ -116,70 +128,8 @@ public class galeryFragment extends Fragment {
         return tempData;
     }
 
-    private void getDataVolley(){
 
-        final StringRequest request = new StringRequest(Request.Method.GET, urlData,
-                new com.android.volley.Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-                        ambilData(response);
-                    }
-                },
-
-                new com.android.volley.Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-
-                    }
-                }
-                );
-        RequestQueue requestQueue = Volley.newRequestQueue(getContext());
-        requestQueue.add(request);
-    }
-
-    private void ambilData(String response){
-        try {
-            JSONObject jsonObject = new JSONObject(response);
-
-            //ini toast untuk menampilkan pesan sukses dari json
-            Toast.makeText(getActivity(), jsonObject.getString("message"), Toast.LENGTH_SHORT).show();
-
-            // ini utk mengambil attribute array yg ada di json (yaitu attribute data)
-            JSONArray jsonArray = jsonObject.getJSONArray("data");
-
-            //looping utk array
-            for(int i=0; i<jsonArray.length(); i++){
-                //get json berdasarkan banyaknya data (index i)
-                JSONObject objekFoto = jsonArray.getJSONObject(i);
-
-                //get data berdasarkan attribte yang ada dijsonnya (harus sama)
-                String nama = objekFoto.getString("nama");
-                String deskripsi = objekFoto.getString("deskripsi");
-                String path_foto = objekFoto.getString("path_foto");
-                Double lat = Double.valueOf(objekFoto.getString("lat"));
-                Double lng = Double.valueOf(objekFoto.getString("lng"));
-
-                //add data ke modelnya
-                Foto fotoModel = new Foto();
-                fotoModel.setNama(nama);
-                fotoModel.setDeskripsi(deskripsi);
-                fotoModel.setPath_foto(path_foto);
-                fotoModel.setLat(lat);
-                fotoModel.setLng(lng);
-
-                //add model ke list
-                fotoList.add(fotoModel);
-
-                //passing data list ke adapter
-                fotoAdapter.setDataFoto(fotoList);
-            }
-
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void getFoto()  {
+    public static void getFoto()  {
 
         TmdbClient client = (new Retrofit.Builder()
                 .baseUrl("http://parit.store")
@@ -209,7 +159,7 @@ public class galeryFragment extends Fragment {
         });
     }
 
-    public void saveToDb(List<Foto> fotoList){
+    public static void saveToDb(List<Foto> fotoList){
         for (Foto  m : fotoList){
             Foto record = new Foto();
             record.setNama(m.getNama());
@@ -223,5 +173,13 @@ public class galeryFragment extends Fragment {
         }
     }
 
+    //klik foto
 
+    @Override
+    public void ItemClicked(Foto foto) {
+        Toast.makeText(activity, "Item yang diklik adalah : " + foto.getNama(), Toast.LENGTH_SHORT).show();
+        Intent detailIntent = new Intent(activity, DetailActivity.class);
+        detailIntent.putExtra("key_foto_parcelable", foto);
+        startActivity(detailIntent);
+    }
 }

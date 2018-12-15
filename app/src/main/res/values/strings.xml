@@ -15,4 +15,17 @@
     <string name="permission_dialog">Accessing Location Permissions required</string>
     <string name="go_to_permissions_settings">Go to App settings and enable permissions</string>
 
+
+    <!--DETAIL ACTIVITY-->
+    <string name="nama">Nama Foto</string>
+    <string name="lokasi">Lokasi</string>
+    <string name="deskripsi">Deskripsi</string>
+    <string name="lat">Lattitude</string>
+    <string name="lng">Longitude</string>
+    <string name="Pi">Pesona Indonesia</string>
+    <string name="konten">Deskripsi Pesona Indonesia</string>
+    <string name="alamat">Alamat</string>
+    <string name="unduh">Unduh</string>
+    <string name="Item" />
+
 </resources>

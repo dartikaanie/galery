@@ -1,6 +1,9 @@
 package com.example.dara.galery;
 
-public class Foto {
+import android.os.Parcel;
+import android.os.Parcelable;
+
+public class Foto implements Parcelable{
 
     int id;
     String nama;
@@ -24,6 +27,8 @@ public class Foto {
     public Foto() {
 
     }
+
+
 
     public int getId() {
         return id;
@@ -83,5 +88,41 @@ public class Foto {
                 ", lat='" + lat + '\'' +
                 ", lng='" + lng + '\'' +
                 '}';
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeInt(this.id);
+        dest.writeString(this.nama);
+        dest.writeString(this.deskripsi);
+        dest.writeDouble(this.lat);
+        dest.writeDouble(this.lng);
+        dest.writeString(this.path_foto);
+    }
+
+    public static final Parcelable.Creator<Foto> CREATOR = new Parcelable.Creator<Foto>(){
+        @Override
+        public Foto createFromParcel(Parcel source){
+            return new Foto(source);
+        }
+
+        @Override
+        public  Foto[] newArray(int size){
+            return new Foto[size];
+        }
+    };
+
+    protected Foto(Parcel in){
+        this.id = in.readInt();
+        this.nama = in.readString();
+        this.deskripsi = in.readString();
+        this.lat = in.readDouble();
+        this.lng = in.readDouble();
+        this.path_foto = in.readString();
     }
 }
