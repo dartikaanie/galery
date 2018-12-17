@@ -3,6 +3,7 @@ package com.example.dara.galery;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
@@ -27,12 +28,12 @@ import java.util.ArrayList;
 public class MainActivity extends AppCompatActivity implements BottomNavigationView.OnNavigationItemSelectedListener {
 
     private FloatingActionButton fab;
+    public int mode;
 
     @Override
     protected void onCreate(Bundle outState) {
         super.onCreate(outState);
         setContentView(R.layout.activity_main);
-
 
 
 //            // kita set default nya Home Fragment
@@ -71,8 +72,8 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        Fragment fragment = new addFragment();
-//        outState("simpan_state", fragment);
+        outState.putInt("status_halaman",mode);
+
     }
 
 

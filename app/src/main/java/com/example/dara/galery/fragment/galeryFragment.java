@@ -4,6 +4,7 @@ package com.example.dara.galery.fragment;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -17,6 +18,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.example.dara.galery.DatabaseHandler;
@@ -43,8 +45,9 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class galeryFragment extends Fragment implements FotoAdapter.OnItemClicked {
 
-    RecyclerView rvListFoto;
+    static RecyclerView rvListFoto;
     static FotoAdapter fotoAdapter;
+    static ProgressBar waiting;
 
     static DatabaseHandler handler;
     static Foto dataFoto;
@@ -67,7 +70,7 @@ public class galeryFragment extends Fragment implements FotoAdapter.OnItemClicke
 
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_galery, container, false);
-
+        waiting=view.findViewById(R.id.progressBar);
         fotoAdapter = new FotoAdapter();
         fotoAdapter.setDataFoto(getDataFoto(handler,dataFoto));
         fotoAdapter.setClickHandler(this);
@@ -75,6 +78,9 @@ public class galeryFragment extends Fragment implements FotoAdapter.OnItemClicke
         rvListFoto = view.findViewById(R.id.list_galery);
         rvListFoto.setAdapter(fotoAdapter);
         RecyclerView.LayoutManager layoutManager;
+
+        rvListFoto.setVisibility(view.INVISIBLE);
+        waiting.setVisibility(view.VISIBLE);
 
         if(getResources().getDisplayMetrics().widthPixels>getResources().getDisplayMetrics().
                 heightPixels)
@@ -99,6 +105,11 @@ public class galeryFragment extends Fragment implements FotoAdapter.OnItemClicke
         }else{
 //            fotoAdapter.setDataFoto(getDataFoto(handler,dataFoto));
         }
+
+        SharedPreferences pref = activity.getPreferences(Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = pref.edit();
+        editor.putInt("status_fragment",1);
+        editor.commit();
         return view;
     }
 
@@ -131,15 +142,24 @@ public class galeryFragment extends Fragment implements FotoAdapter.OnItemClicke
 
     public static void getFoto()  {
 
+        waiting.setVisibility(View.VISIBLE);
+        rvListFoto.setVisibility(View.INVISIBLE);
+
         TmdbClient client = (new Retrofit.Builder()
-                .baseUrl("http://parit.store")
+                .baseUrl("http://parit.store/galery/public/")
                 .addConverterFactory(GsonConverterFactory.create())
                 .build())
                 .create(TmdbClient.class);
+
+
+
         Call<List<Foto>> call = client.getAllGaleries();
         call.enqueue(new Callback<List<Foto>>() {
             @Override
             public void onResponse(Call<List<Foto>> call,  Response<List<Foto>> response) {
+                waiting.setVisibility(View.INVISIBLE);
+                rvListFoto.setVisibility(View.VISIBLE);
+
                 Toast.makeText(activity, "Berhasil", Toast.LENGTH_SHORT).show();
 
                 List<Foto> listFotoItem = response.body();
@@ -150,6 +170,7 @@ public class galeryFragment extends Fragment implements FotoAdapter.OnItemClicke
                     saveToDb(listFotoItem);
                     fotoAdapter.setDataFoto(new ArrayList<Foto>(listFotoItem));
                 }
+
             }
 
             @Override

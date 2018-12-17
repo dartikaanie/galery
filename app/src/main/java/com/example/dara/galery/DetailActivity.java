@@ -149,6 +149,7 @@ public class DetailActivity extends AppCompatActivity {
 
         // Make sure you put example png image named myImage.png in your
         // directory
+        Log.e("image", imageUrl);
         String imagePath =imageUrl;
 
         File imageFileToShare = new File(imagePath);
