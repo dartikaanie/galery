@@ -177,13 +177,13 @@
             android:layout_height="match_parent"
             android:orientation="horizontal">
 
-            <Button
-                    android:id="@+id/btn_download"
-                    style="@style/ButtonGeneral"
-                    android:layout_width="176dp"
-                    android:drawableLeft="@drawable/download"
-                    android:layout_weight="1"
-                    android:text="@string/unduh" />
+            <!--<Button-->
+                    <!--android:id="@+id/btn_download"-->
+                    <!--style="@style/ButtonGeneral"-->
+                    <!--android:layout_width="176dp"-->
+                    <!--android:drawableLeft="@drawable/download"-->
+                    <!--android:layout_weight="1"-->
+                    <!--android:text="@string/unduh" />-->
 
             <Button
                 android:id="@+id/btn_share"

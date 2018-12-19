@@ -28,6 +28,7 @@ import android.util.Base64;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -96,7 +97,13 @@ public class addFragment extends Fragment {
         super.onCreate(savedInstanceState);
         // jangan hapus fragment ini saat activity dibuat ulang.
         setRetainInstance(true);
-        setHasOptionsMenu(false);
+        setHasOptionsMenu(true);
+    }
+
+    @Override
+    public void onPrepareOptionsMenu(Menu menu) {
+        MenuItem item=menu.findItem(R.id.menu_refresh);
+        item.setVisible(false);
     }
 
     @Nullable

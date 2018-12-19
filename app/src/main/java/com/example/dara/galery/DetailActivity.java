@@ -72,7 +72,7 @@ public class DetailActivity extends AppCompatActivity {
             lng.setText(String.valueOf(foto.getLng()));
             imageUrl = "http://parit.store/galery/public/foto/" + foto.getPath_foto();
             Glide.with(this).load(imageUrl).into(fotoView);
-            unduhBtn = findViewById(R.id.btn_download);
+//            unduhBtn = findViewById(R.id.btn_download);
             shareBtn = findViewById(R.id.btn_share);
             Foto data = basisData.dataFotoDao().selectFoto(foto.getId());
             if(konekkah()){
@@ -100,12 +100,12 @@ public class DetailActivity extends AppCompatActivity {
                 }
             });
 
-            unduhBtn.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Toast.makeText(DetailActivity.this, "download", Toast.LENGTH_SHORT).show();
-                }
-            });
+//            unduhBtn.setOnClickListener(new View.OnClickListener() {
+//                @Override
+//                public void onClick(View v) {
+//                    Toast.makeText(DetailActivity.this, "download", Toast.LENGTH_SHORT).show();
+//                }
+//            });
 
             shareBtn = findViewById(R.id.btn_share);
             shareBtn.setOnClickListener(new View.OnClickListener() {
