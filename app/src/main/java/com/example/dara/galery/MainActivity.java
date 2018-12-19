@@ -12,6 +12,7 @@ import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -29,10 +30,13 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
 
     private FloatingActionButton fab;
     public int mode;
+    String FRAGMENT_TAG="addFragment";
+    private Fragment mContent;
+    private android.app.Fragment mContentFragment;
 
     @Override
-    protected void onCreate(Bundle outState) {
-        super.onCreate(outState);
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
 
@@ -43,6 +47,16 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
 //        // beri listener pada saat item/menu bottomnavigation terpilih
         bottomNavigationView.setOnNavigationItemSelectedListener(this);
 
+        if (savedInstanceState != null) {
+            if(FRAGMENT_TAG == "addFragmnet"){
+                loadFragment(new addFragment());
+            }else{
+                loadFragment(new galeryFragment());
+            }
+
+        }
+
+        Log.e("fragment", FRAGMENT_TAG);
 
     }
 
@@ -51,7 +65,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
 //        getMenuInflater().inflate(R.menu.menu_main, menu);
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.menu_main, menu);
-        return super.onCreateOptionsMenu(menu);
+        return true;
     }
 
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -63,6 +77,12 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
                 galeryFragment.getFoto();
                 break;
 
+            case R.id.favorit_menu :
+                Toast.makeText(this, "Refreshing data favorite . . .", Toast.LENGTH_SHORT).show();
+                Intent favIntent = new Intent(this, FavoritActivity.class);
+                startActivity(favIntent);
+                break;
+
         }
 
 
@@ -72,7 +92,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putInt("status_halaman",mode);
+        getFragmentManager().findFragmentByTag(FRAGMENT_TAG);
 
     }
 
@@ -81,8 +101,9 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
     // method untuk load fragment yang sesuai
     private boolean loadFragment(android.support.v4.app.Fragment fragment){
         if (fragment != null) {
+
             getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.fl_container, fragment)
+                    .replace(R.id.fl_container, fragment, "galeryFragment")
                     .commit();
             return true;
         }
@@ -91,17 +112,22 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
 
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
-        android.support.v4.app.Fragment fragment = null;
         switch (menuItem.getItemId()){
             case R.id.navigation_galery:
-                fragment = new galeryFragment();
+                FRAGMENT_TAG="galeryFragment";
+                getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.fl_container, new galeryFragment(), "galeryFragment")
+                    .commit();
                 break;
             case R.id.navigation_add:
-                fragment = new addFragment();
+                FRAGMENT_TAG="addFragment";
+                getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.fl_container,  new addFragment(), "addFragment")
+                    .commit();
                 break;
 
         }
-        return loadFragment(fragment);
+        return true;
     }
 
     public Boolean konekkah(){

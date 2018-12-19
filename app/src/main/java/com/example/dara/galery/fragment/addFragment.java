@@ -27,6 +27,7 @@ import android.text.TextUtils;
 import android.util.Base64;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -38,6 +39,7 @@ import android.widget.Toast;
 
 import com.example.dara.galery.DatabaseHandler;
 import com.example.dara.galery.Foto;
+import com.example.dara.galery.MainActivity;
 import com.example.dara.galery.R;
 import com.example.dara.galery.TmdbClient;
 
@@ -60,12 +62,10 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class addFragment extends Fragment {
 
     Intent intent;
-    Uri fileUri;
     Button btn_choose_image;
     ImageView imageView;
     Bitmap bitmap, decoded;
-    ProgressBar waiting;
-    public final int REQUEST_CAMERA = 0;
+     public final int REQUEST_CAMERA = 0;
     public final int SELECT_FILE = 1;
 
     int bitmap_size = 40; // image quality 1 - 100;
@@ -73,11 +73,13 @@ public class addFragment extends Fragment {
 
     //untuk location
     private static  final  int REQUEST_LOCATION =1;
-    private EditText ETnama, ETpath, ETdeskripsi, ETlokasi;
-    TextView TextView;
+    private EditText ETnama, ETdeskripsi, ETlokasi;
+    TextView TextAlert;
     private Button tambahBtn, button_location;
     LocationManager locationManager;
     String latitude, longtitude;
+    Menu refresh;
+    int status_image;
 
     DatabaseHandler handler;
     private Activity activity;
@@ -89,6 +91,14 @@ public class addFragment extends Fragment {
         handler = new DatabaseHandler(context);
     }
 
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        // jangan hapus fragment ini saat activity dibuat ulang.
+        setRetainInstance(true);
+        setHasOptionsMenu(false);
+    }
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -96,21 +106,26 @@ public class addFragment extends Fragment {
 
         btn_choose_image = view.findViewById(R.id.btn_choose_image);
         imageView = view.findViewById(R.id.imageView);
-
-
+        refresh = view.findViewById(R.id.menu_refresh);
+        TextAlert = view.findViewById(R.id.alert_foto);
+        TextAlert.setVisibility(view.INVISIBLE);
+        status_image =0;
         btn_choose_image.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 selectImage();
             }
         });
+
+
+
         return view;
     }
 
     private void selectImage() {
         imageView.setImageResource(0);
-        final CharSequence[] items = {"Take Photo", "Choose from Library",
-                "Cancel"};
+        final CharSequence[] items = {"Ambil Foto", "Ambil dari Galery",
+                "Batal"};
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this.getContext());
         builder.setTitle("Add Photo!");
@@ -119,8 +134,8 @@ public class addFragment extends Fragment {
             @Override
             public void onClick(DialogInterface dialog, int item) {
                 if (items[item].equals("Take Photo")) {
-                    intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                    startActivityForResult(intent, 0);
+                    intent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
+                    startActivityForResult(intent, REQUEST_CAMERA);
                 } else if (items[item].equals("Choose from Library")) {
                     intent = new Intent();
                     intent.setType("image/*");
@@ -135,9 +150,55 @@ public class addFragment extends Fragment {
     }
 
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode,resultCode,data);
-        Bitmap bitmap = (Bitmap) data.getExtras().get("data");
-        imageView.setImageBitmap(bitmap);
+        Log.e("onActivityResult", "requestCode " + requestCode + ", resultCode " + resultCode);
+
+        if (resultCode == Activity.RESULT_OK) {
+            if (requestCode == REQUEST_CAMERA) {
+                try {
+                    super.onActivityResult(requestCode,resultCode,data);
+                    Bitmap bitmap = (Bitmap) data.getExtras().get("data");
+                    imageView.setImageBitmap(bitmap);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            } else if (requestCode == SELECT_FILE && data != null && data.getData() != null) {
+                try {
+                    // mengambil gambar dari Gallery
+                    bitmap = MediaStore.Images.Media.getBitmap(getContext().getContentResolver(), data.getData());
+                    setToImageView(getResizedBitmap(bitmap, max_resolution_image));
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            status_image =1;
+        }
+    }
+
+    // Untuk menampilkan bitmap pada ImageView
+    private void setToImageView(Bitmap bmp) {
+        //compress image
+        ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+        bmp.compress(Bitmap.CompressFormat.JPEG, bitmap_size, bytes);
+        decoded = BitmapFactory.decodeStream(new ByteArrayInputStream(bytes.toByteArray()));
+
+        //menampilkan gambar yang dipilih dari camera/gallery ke ImageView
+        imageView.setImageBitmap(decoded);
+    }
+
+    // Untuk resize bitmap
+    public Bitmap getResizedBitmap(Bitmap image, int maxSize) {
+        int width = image.getWidth();
+        int height = image.getHeight();
+
+        float bitmapRatio = (float) width / (float) height;
+        if (bitmapRatio > 1) {
+            width = maxSize;
+            height = (int) (width / bitmapRatio);
+        } else {
+            height = maxSize;
+            width = (int) (height * bitmapRatio);
+        }
+        return Bitmap.createScaledBitmap(image, width, height, true);
     }
 
 
@@ -149,7 +210,6 @@ public class addFragment extends Fragment {
 
 
         ETnama = view.findViewById(R.id.edit_text_name);
-        ETpath = view.findViewById(R.id.edit_text_path);
         ETdeskripsi = view.findViewById(R.id.edit_text_deskripsi);
         ETlokasi = view.findViewById(R.id.edit_text_lat);
         tambahBtn = view.findViewById(R.id.tambah_foto);
@@ -172,10 +232,6 @@ public class addFragment extends Fragment {
             }
         });
 
-
-
-
-
         //insert
 
         // lakukan validasi terlebih dahulu, jika sudah benar, maka lakukan proses insert data
@@ -183,11 +239,6 @@ public class addFragment extends Fragment {
             @Override
             public void onClick(View view) {
 
-                 String nama = ETnama.getText().toString();
-                 String deskripsi = ETdeskripsi.getText().toString();
-                 Double lat = Double.valueOf(latitude);
-                 Double lng = Double.valueOf(longtitude);
-                 String foto = getBase64String(imageView);
 
                 if(TextUtils.isEmpty(ETnama.getText().toString())){
                     ETnama.setError(getResources().getString(R.string.msg_cannot_allow_empty_field));
@@ -196,30 +247,41 @@ public class addFragment extends Fragment {
                 }
                 else if(TextUtils.isEmpty(ETlokasi.getText().toString())) {
                     ETlokasi.setError(getResources().getString(R.string.msg_cannot_allow_empty_field));
+                } else if( status_image == 0) {
+                    TextAlert.setVisibility(view.VISIBLE);
                 }else{
 
-                    TmdbClient client = (new Retrofit.Builder()
-                            .baseUrl("http://parit.store/galery/public/")
-                            .addConverterFactory(GsonConverterFactory.create())
-                            .build())
-                            .create(TmdbClient.class);
-                    Call<ResponseBody> call = client.newFoto(nama, deskripsi,lat, lng, foto);
-                    Log.e("foto", foto);
+                    if(((MainActivity)activity).konekkah()){
+                        String nama = ETnama.getText().toString();
+                        String deskripsi = ETdeskripsi.getText().toString();
+                        Double lat = Double.valueOf(latitude);
+                        Double lng = Double.valueOf(longtitude);
+                        String foto = getBase64String(imageView);
+                        TmdbClient client = (new Retrofit.Builder()
+                                .baseUrl("http://parit.store/galery/public/")
+                                .addConverterFactory(GsonConverterFactory.create())
+                                .build())
+                                .create(TmdbClient.class);
+                        Call<ResponseBody> call = client.newFoto(nama, deskripsi,lat, lng, foto);
+                        Log.e("foto", foto);
 
-                    call.enqueue(new Callback<ResponseBody>() {
-                        @Override
-                        public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                            ResponseBody s = response.body();
-                            Toast.makeText(activity, "berhasil disimpan", Toast.LENGTH_LONG).show();
-                        }
+                        call.enqueue(new Callback<ResponseBody>() {
+                            @Override
+                            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                                ResponseBody s = response.body();
+                                Toast.makeText(activity, "berhasil disimpan", Toast.LENGTH_LONG).show();
+                            }
 
-                        @Override
-                        public void onFailure(Call<ResponseBody> call, Throwable t) {
-                            Toast.makeText(activity, t.getMessage(), Toast.LENGTH_LONG).show();
-                        }
-                    });
+                            @Override
+                            public void onFailure(Call<ResponseBody> call, Throwable t) {
+                                Toast.makeText(activity, t.getMessage(), Toast.LENGTH_LONG).show();
+                            }
+                        });
+                    }else{
+                        //tidak konek internet
+                        Toast.makeText(activity, "Tambah data Gagal, anda tidak terkoneksi internet", Toast.LENGTH_SHORT).show();
+                    }
 
-//                    tambah(handler);
                 }
             }
         });
@@ -229,9 +291,30 @@ public class addFragment extends Fragment {
 
 
     @Override
-    public void onPause() {
-        super.onPause();
-        ETnama.clearFocus();
+    public void onSaveInstanceState(final Bundle outState) {
+        super.onSaveInstanceState(outState);
+        String lokasi = ETlokasi.getText().toString();
+        String nama = ETnama.getText().toString();
+        String deskripsi = ETdeskripsi.getText().toString();
+        outState.putString("data_lokasi", lokasi);
+        outState.putString("data_nama", nama);
+        outState.putString("data_deskripsi",deskripsi);
+    }
+
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        if( savedInstanceState!=null){
+            String lokasi = savedInstanceState.getString("data_lokasi","");
+            String nama = savedInstanceState.getString("data_nama","");
+            String deskripsi = savedInstanceState.getString("data_deskripsi","");
+            ETlokasi.setText(lokasi);
+            ETnama.setText(nama);
+            ETdeskripsi.setText(deskripsi);
+
+        }
+
+
     }
 
    public void getLocation(){
@@ -274,28 +357,6 @@ public class addFragment extends Fragment {
                     }
                 });
    }
-
-    private void tambah(final DatabaseHandler databaseHandler){
-        String nama = ETnama.getText().toString();
-        String deskripsi = ETdeskripsi.getText().toString();
-        String path = ETpath.getText().toString();
-        Double lat = Double.valueOf(latitude);
-        Double lng = Double.valueOf(longtitude);
-
-
-        Foto dataFoto = new Foto();
-        dataFoto.setNama(nama);
-        dataFoto.setDeskripsi(deskripsi);
-        dataFoto.setPath_foto(path);
-        dataFoto.setLat(lat);
-        dataFoto.setLng(lng);
-
-        databaseHandler.tambah_foto(dataFoto);
-
-        ETnama.setText("");
-        ETpath.setText("");
-        ETdeskripsi.setText("");
-    }
 
     //konvert gambar ke string
     private String getBase64String(ImageView imageFoto) {

@@ -55,8 +55,6 @@ public class FotoAdapter extends RecyclerView.Adapter<FotoAdapter.FotoHolder>{
         holder.judul.setText(String.valueOf(foto.nama));
 //        holder.viewLokasi.setText(String.valueOf(foto.lat+" "+ foto.lng));
         StringBuilder result = new StringBuilder();
-//        StringBuilder alamatR = new StringBuilder();
-        Log.e("tes lat", String.valueOf(foto.getLat()));
         try {
             Geocoder geocoder = new Geocoder(context, Locale.getDefault());
             List<Address> addresses = geocoder.getFromLocation(foto.getLat(), foto.getLng(), 1);

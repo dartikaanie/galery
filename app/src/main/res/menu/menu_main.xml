@@ -7,4 +7,9 @@
         android:icon="@drawable/refresh"
         android:title="@string/Item"
         app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/favorit_menu"
+        android:icon="@drawable/star_menu"
+        android:title="@string/item"
+        app:showAsAction="ifRoom" />
 </menu>

@@ -1,27 +1,31 @@
 package com.example.dara.galery;
 
+import android.arch.persistence.room.Ignore;
 import android.os.Parcel;
 import android.os.Parcelable;
 
 public class Foto implements Parcelable{
 
     int id;
+    int fav;
     String nama;
     String path_foto;
     String deskripsi;
-    Double lat;
-    Double lng;
+    double lat;
+    double lng;
+    String kota, prov;
 
-    public Foto(int i, String string, String cursorString, String s, double aDouble) {
-    }
 
-    public Foto(int id, String nama, String path_foto, String deskripsi, Double lat, Double lng) {
+    public Foto(int id, String nama, String path_foto, String deskripsi, double lat, double lng, String kota, String prov) {
         this.id = id;
         this.nama = nama;
         this.path_foto = path_foto;
         this.deskripsi = deskripsi;
         this.lat = lat;
         this.lng = lng;
+        this.kota = kota;
+        this.prov = prov;
+        this.fav=0;
     }
 
     public Foto() {
@@ -78,16 +82,36 @@ public class Foto implements Parcelable{
         this.lng = lng;
     }
 
+    public String getKota() {
+        return kota;
+    }
+
+    public void setKota(String kota) {
+        this.kota = kota;
+    }
+
+    public String getProv() {
+        return prov;
+    }
+
+    public void setProv(String prov) {
+        this.prov = prov;
+    }
+
+    public int getFav() {
+            return this.fav;
+
+    }
+
+    public void setFav(int fav) {
+        this.fav = fav;
+    }
+
     @Override
     public String toString() {
-        return "Foto{" +
-                "id=" + id +
-                ", nama='" + nama + '\'' +
-                ", path_foto='" + path_foto + '\'' +
-                ", deskripsi='" + deskripsi + '\'' +
-                ", lat='" + lat + '\'' +
-                ", lng='" + lng + '\'' +
-                '}';
+        return  ""+ nama + '\n' +
+                "kota :" + kota + '\n' +
+                "Provinsi :" + prov + '\n';
     }
 
     @Override
@@ -103,6 +127,8 @@ public class Foto implements Parcelable{
         dest.writeDouble(this.lat);
         dest.writeDouble(this.lng);
         dest.writeString(this.path_foto);
+        dest.writeString(this.kota);
+        dest.writeString(this.prov);
     }
 
     public static final Parcelable.Creator<Foto> CREATOR = new Parcelable.Creator<Foto>(){
@@ -124,5 +150,7 @@ public class Foto implements Parcelable{
         this.lat = in.readDouble();
         this.lng = in.readDouble();
         this.path_foto = in.readString();
+        this.kota = in.readString();
+        this.prov = in.readString();
     }
 }
